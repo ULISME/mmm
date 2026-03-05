@@ -3,14 +3,17 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
-const AUTH =
-"MDE5YzIzZGMtZDVkMS03NGY1LWEwZTktZjM3ZmYwMTYxMWQzOmIwMWMxOTBhLWI3NmUtNDczYy1hZDYwLTY1NGIwNDA1NGY3NQ==";
+const AUTH = "MDE5YzIzZGMtZDVkMS03NGY1LWEwZTktZjM3ZmYwMTYxMWQzOmIwMWMxOTBhLWI3NmUtNDczYy1hZDYwLTY1NGIwNDA1NGY3NQ==";
+
+app.get("/", (req, res) => {
+  res.send("server alive");
+});
 
 app.post("/analyze", async (req, res) => {
 
-  const prompt = req.body.prompt;
-
   try {
+
+    const prompt = req.body.prompt;
 
     const oauth = await fetch("https://ngw.devices.sberbank.ru/api/v2/oauth", {
       method: "POST",
@@ -33,7 +36,10 @@ app.post("/analyze", async (req, res) => {
       body: JSON.stringify({
         model: "GigaChat",
         messages: [
-          { role: "user", content: prompt }
+          {
+            role: "user",
+            content: prompt
+          }
         ]
       })
     });
@@ -41,16 +47,24 @@ app.post("/analyze", async (req, res) => {
     const data = await ai.json();
 
     const text =
-      data?.choices?.[0]?.message?.content || "Не удалось получить анализ";
+      data?.choices?.[0]?.message?.content ||
+      "ИИ не вернул ответ";
 
     res.json({ text });
 
   } catch (e) {
 
-    res.json({ text: "Ошибка анализа" });
+    res.json({
+      text: "Ошибка сервера",
+      error: String(e)
+    });
 
   }
 
 });
 
-app.listen(process.env.PORT);
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("server started on " + PORT);
+});
