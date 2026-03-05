@@ -26,7 +26,7 @@ app.post("/analyze", async (req, res) => {
         headers: {
           Authorization: "Basic " + AUTH,
           "Content-Type": "application/x-www-form-urlencoded",
-          RqUID: crypto.randomUUID()
+          RqUID: "12345678-1234-1234-1234-123456789012"
         },
         body: "scope=GIGACHAT_API_PERS"
       }
@@ -49,9 +49,7 @@ app.post("/analyze", async (req, res) => {
               role: "user",
               content: prompt
             }
-          ],
-          temperature: 0.7,
-          max_tokens: 300
+          ]
         })
       }
     );
